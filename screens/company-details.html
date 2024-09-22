@@ -2,9 +2,21 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Company Details</title>
   <link rel="stylesheet" href="../css/style.css">
+  <style>
+    /* Optional: Add some basic styling for error messages */
+    #email-status {
+      color: red;
+      font-weight: bold;
+      margin-top: 10px;
+      text-align: center;
+    }
+    #email-status.valid {
+      color: green;
+    }
+  </style>
 </head>
 <body>
   <div class="company-details-container">
@@ -80,14 +92,24 @@
     }
 
     // Function to send email and company name via POST to Power Automate
-    function sendEmail(event) {
+    async function sendEmail(event) {
       event.preventDefault(); // Prevent form submission from reloading the page
 
-      var userEmail = document.getElementById("user-email").value;
+      var userEmail = document.getElementById("user-email").value.trim();
       var selectedCompany = localStorage.getItem("selectedCompany");
-      
+      var emailStatusDiv = document.getElementById("email-status");
+
       if (!userEmail || !selectedCompany) {
         alert("Please enter your email and select a company.");
+        return;
+      }
+
+      // Check if the email is valid before proceeding
+      if (!emailIsValid) { // 'emailIsValid' will be managed by the validation script
+        emailStatusDiv.innerHTML = `
+          <p style="color: red; font-weight: bold; text-align: center; margin-top: 10px;">
+            Please enter a valid email before submitting.
+          </p>`;
         return;
       }
 
@@ -100,43 +122,124 @@
         "companyName": companyDetails.name
       };
 
-      // Send POST request to Power Automate flow URL
-      fetch("https://prod-21.canadacentral.logic.azure.com:443/workflows/25a6649dbe334b849ca261e95ec6cefe/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=v3MJjl16w7nUvvwbrM9j4NX-BsJ47Vg4DzibtOPSs3Q", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(payload)
-      })
-      .then(response => {
+      try {
+        const response = await fetch("https://prod-21.canadacentral.logic.azure.com:443/workflows/25a6649dbe334b849ca261e95ec6cefe/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=v3MJjl16w7nUvvwbrM9j4NX-BsJ47Vg4DzibtOPSs3Q", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+
         if (response.ok) {
           // Show Thank You message
-          document.getElementById("email-status").innerHTML = `
+          emailStatusDiv.innerHTML = `
             <p style="color: green; font-weight: bold; text-align: center; margin-top: 10px;">
               Thank you! Your message has been sent.
             </p>`;
           
           // Reset form
           document.getElementById("get-in-touch-form").reset();
+          emailIsValid = false; // Reset validation status
         } else {
-          document.getElementById("email-status").innerHTML = `
+          emailStatusDiv.innerHTML = `
             <p style="color: red; font-weight: bold; text-align: center; margin-top: 10px;">
               There was an error sending your email. Please try again.
             </p>`;
         }
-      })
-      .catch(error => {
+      } catch (error) {
         console.error("Error:", error);
-        document.getElementById("email-status").innerHTML = `
+        emailStatusDiv.innerHTML = `
           <p style="color: red; font-weight: bold; text-align: center; margin-top: 10px;">
             An error occurred. Please try again.
           </p>`;
-      });
+      }
     }
 
     function goBack() {
       window.history.back(); // Go back to the previous page
     }
+
+    // ------------------- Email Validation Integration -------------------
+
+    let emailIsValid = false; // Flag to track email validity
+
+    document.addEventListener('DOMContentLoaded', function () {
+      // Define the debounce function
+      function debounce(func, wait, immediate) {
+        let timeout;
+        return function () {
+          const context = this, args = arguments;
+          const later = function () {
+            timeout = null;
+            if (!immediate) func.apply(context, args);
+          };
+          const callNow = immediate && !timeout;
+          clearTimeout(timeout);
+          timeout = setTimeout(later, wait);
+          if (callNow) func.apply(context, args);
+        };
+      }
+
+      const emailInput = document.getElementById('user-email'); // Updated ID
+      const emailStatusDiv = document.getElementById('email-status'); // Updated ID
+
+      // Function to check if the email format is valid
+      function isValidEmailFormat(email) {
+        const regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return regex.test(String(email).toLowerCase());
+      }
+
+      // Email validation function that calls the API
+      async function validateEmail() {
+        const email = emailInput.value.trim();
+        // Clear the error message each time before validating anew
+        emailStatusDiv.textContent = "";
+        emailStatusDiv.classList.remove('valid');
+
+        // First, check if the email format is valid
+        if (!isValidEmailFormat(email)) {
+          emailStatusDiv.textContent = "Please enter a valid email format.";
+          emailIsValid = false;
+          return; // Stop the function if the format is not valid
+        }
+
+        // Proceed with the API call if the format is valid
+        const encodedEmail = encodeURIComponent(email);
+        const timeout = 10; // Adjust timeout as needed
+        const url = `https://bouncer-email-verification.p.rapidapi.com/v1/email/verify?email=${encodedEmail}&timeout=${timeout}`;
+        const options = {
+          method: 'GET',
+          headers: {
+            'X-RapidAPI-Key': '9100ef6632msh2412914bec52bc1p130820jsn9d07d4911864', // Replace with your actual API key
+            'X-RapidAPI-Host': 'bouncer-email-verification.p.rapidapi.com'
+          }
+        };
+
+        try {
+          const response = await fetch(url, options);
+          const data = await response.json();
+
+          // Check the API response and update the UI accordingly
+          console.log(data);
+          if (data.status !== 'deliverable') {
+            emailStatusDiv.textContent = "It seems that your email might be incorrect.";
+            emailIsValid = false;
+          } else {
+            emailStatusDiv.textContent = "Email looks good!";
+            emailStatusDiv.classList.add('valid');
+            emailIsValid = true;
+          }
+        } catch (error) {
+          console.error('Failed to validate email:', error);
+          emailStatusDiv.textContent = "There was a problem validating your email.";
+          emailIsValid = false;
+        }
+      }
+
+      // Attach debounced event listener to the email input
+      emailInput.addEventListener('input', debounce(validateEmail, 500));
+    });
   </script>
 </body>
 </html>
