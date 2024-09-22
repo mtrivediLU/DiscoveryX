@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Company List</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="company-list-container">
+    <div class="header-section">
+      <h2 id="industry-title">Companies in </h2>
+      <input type="text" id="company-search" placeholder="Search companies..." onkeyup="searchCompanies()">
+    </div>
+    <div class="company-cards" id="company-list">
+      <!-- Company cards will be populated here dynamically -->
+    </div>
+  </div>
+
+  <script src="../data/data.js"></script>
+  <script>
+    // Fetch selected industry from localStorage and display companies
+   // Fetch selected industry from localStorage and display companies
+document.addEventListener("DOMContentLoaded", function () {
+  var selectedIndustry = localStorage.getItem("selectedIndustry");
+  if (selectedIndustry) {
+    document.getElementById("industry-title").innerText = "Companies in " + selectedIndustry;
+    
+    // Get company data from data.js file
+    var companies = getCompaniesByIndustry(selectedIndustry);
+    var companyList = document.getElementById("company-list");
+
+    if (companies.length > 0) {
+      companies.forEach(function (company) {
+        var companyCard = document.createElement("div");
+        companyCard.classList.add("company-card");
+
+        // Add company logo
+        var companyLogo = document.createElement("img");
+        companyLogo.src = company.logo;
+        companyLogo.alt = company.name + " Logo";
+        companyLogo.classList.add("company-logo");
+
+        // Add company name
+        var companyName = document.createElement("h3");
+        companyName.innerText = company.name;
+
+        // Add "Get More Details" button
+        var moreDetailsButton = document.createElement("button");
+        moreDetailsButton.innerText = "Get More Details";
+        moreDetailsButton.classList.add("details-button");
+
+        // Add event listener to redirect to company-details.html
+        moreDetailsButton.addEventListener("click", function () {
+          localStorage.setItem("selectedCompany", company.name);
+          window.location.href = 'company-details.html'; // Redirect to company details page
+        });
+
+        // Append elements to the company card
+        companyCard.appendChild(companyLogo);
+        companyCard.appendChild(companyName);
+        companyCard.appendChild(moreDetailsButton);
+
+        // Append the company card to the list
+        companyList.appendChild(companyCard);
+      });
+    } else {
+      companyList.innerText = "No companies available for this industry.";
+    }
+  } else {
+    document.getElementById("industry-title").innerText = "No industry selected.";
+  }
+});
+
+    // Search companies function
+    function searchCompanies() {
+      var input = document.getElementById("company-search").value.toLowerCase();
+      var cards = document.getElementsByClassName("company-card");
+
+      Array.from(cards).forEach(function (card) {
+        var name = card.getElementsByTagName("h3")[0].innerText.toLowerCase();
+        if (name.includes(input)) {
+          card.style.display = "block";
+        } else {
+          card.style.display = "none";
+        }
+      });
+    }
+  </script>
+</body>
+</html>

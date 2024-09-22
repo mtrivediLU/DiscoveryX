@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Company Details</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="company-details-container">
+    <div id="company-details">
+      <!-- Company details will be dynamically populated here -->
+    </div>
+
+    <div class="details-tabs">
+      <button class="details-tab" id="about-tab" onclick="showSection('about')">About</button>
+      <button class="details-tab" id="team-tab" onclick="showSection('team')">Team</button>
+      <button class="details-tab" id="contact-tab" onclick="showSection('contact')">Contact</button>
+    </div>
+
+    <div id="details-content">
+      <!-- Section content will be shown here -->
+    </div>
+
+    <!-- New Get In Touch Section -->
+    <div class="get-in-touch">
+      <h3>Get in Touch with Us</h3>
+      <form id="get-in-touch-form" onsubmit="sendEmail(event)">
+        <input type="email" id="user-email" placeholder="Enter your email" required />
+        <button type="submit" class="submit-button">Submit</button>
+      </form>
+      <div id="email-status"></div> <!-- To show success/error messages -->
+    </div>
+
+    <button id="back-button" onclick="goBack()">Back to Company List</button>
+  </div>
+
+  <script src="../data/company-details.js"></script>
+  <script>
+    // Fetch selected company from localStorage and display details
+    document.addEventListener("DOMContentLoaded", function () {
+      var selectedCompany = localStorage.getItem("selectedCompany");
+      if (selectedCompany) {
+        var companyDetails = getCompanyDetailsByName(selectedCompany);
+        if (companyDetails) {
+          var detailsDiv = document.getElementById("company-details");
+
+          // Create company header (logo and name)
+          var companyHeader = `
+            <img src="${companyDetails.logo}" alt="${companyDetails.name} Logo" class="company-details-logo">
+            <h2>${companyDetails.name}</h2>
+            <p>${companyDetails.description}</p>
+          `;
+          detailsDiv.innerHTML = companyHeader;
+
+          // Default to show "About" section
+          showSection('about');
+        } else {
+          detailsDiv.innerHTML = "Company details not found.";
+        }
+      } else {
+        document.getElementById("company-details").innerHTML = "No company selected.";
+      }
+    });
+
+    // Show specific section and highlight the selected tab
+    function showSection(section) {
+      var selectedCompany = localStorage.getItem("selectedCompany");
+      var companyDetails = getCompanyDetailsByName(selectedCompany);
+      var contentDiv = document.getElementById("details-content");
+
+      // Update the content
+      if (companyDetails && companyDetails.details[section]) {
+        contentDiv.innerHTML = `<p>${companyDetails.details[section]}</p>`;
+      }
+
+      // Highlight the selected tab
+      document.querySelectorAll('.details-tab').forEach(tab => tab.classList.remove('active-tab'));
+      document.getElementById(`${section}-tab`).classList.add('active-tab');
+    }
+
+    // Function to send email and company name via POST to Power Automate
+    function sendEmail(event) {
+      event.preventDefault(); // Prevent form submission from reloading the page
+
+      var userEmail = document.getElementById("user-email").value;
+      var selectedCompany = localStorage.getItem("selectedCompany");
+      
+      if (!userEmail || !selectedCompany) {
+        alert("Please enter your email and select a company.");
+        return;
+      }
+
+      // Get company details from local storage or data source
+      var companyDetails = getCompanyDetailsByName(selectedCompany);
+
+      // Construct the payload
+      var payload = {
+        "email": userEmail,
+        "companyName": companyDetails.name
+      };
+
+      // Send POST request to Power Automate flow URL
+      fetch("https://prod-21.canadacentral.logic.azure.com:443/workflows/25a6649dbe334b849ca261e95ec6cefe/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=v3MJjl16w7nUvvwbrM9j4NX-BsJ47Vg4DzibtOPSs3Q", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      })
+      .then(response => {
+        if (response.ok) {
+          // Show Thank You message
+          document.getElementById("email-status").innerHTML = `
+            <p style="color: green; font-weight: bold; text-align: center; margin-top: 10px;">
+              Thank you! Your message has been sent.
+            </p>`;
+          
+          // Reset form
+          document.getElementById("get-in-touch-form").reset();
+        } else {
+          document.getElementById("email-status").innerHTML = `
+            <p style="color: red; font-weight: bold; text-align: center; margin-top: 10px;">
+              There was an error sending your email. Please try again.
+            </p>`;
+        }
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        document.getElementById("email-status").innerHTML = `
+          <p style="color: red; font-weight: bold; text-align: center; margin-top: 10px;">
+            An error occurred. Please try again.
+          </p>`;
+      });
+    }
+
+    function goBack() {
+      window.history.back(); // Go back to the previous page
+    }
+  </script>
+</body>
+</html>

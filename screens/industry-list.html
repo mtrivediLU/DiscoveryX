@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Industry List</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="industry-list-container">
+    <div class="header-section">
+      <h2>Select an Industry</h2>
+      <input type="text" id="industry-search" placeholder="Search industries..." onkeyup="searchIndustries()">
+    </div>
+    <div class="industry-cards" id="industry-cards">
+      <!-- 30 Cards with unique industry names and colors -->
+      <div class="industry-card" style="background-color: #FFEFD5;" onclick="selectIndustry('Financial Services')">
+        <div class="card-content">
+          <img src="../images/Financial Services.png" alt="Financial Services">
+          <div class="card-text">
+            <h3>Financial Services</h3>
+          </div>
+        </div>
+      </div>
+
+      <div class="industry-card" style="background-color: #E0FFFF;" onclick="selectIndustry('AI Tech')">
+        <div class="card-content">
+          <img src="../images/Ai.png" alt="AI Tech">
+          <div class="card-text">
+            <h3>AI Tech</h3>
+          </div>
+        </div>
+      </div>
+
+      <div class="industry-card" style="background-color: #FFDAB9;">
+        <div class="card-content">
+          <img src="../images/Edu.png" alt="Education">
+          <div class="card-text">
+            <h3>Education</h3>
+          </div>
+        </div>
+      </div>
+
+      <div class="industry-card" style="background-color: #D3FFCE;">
+        <div class="card-content">
+          <img src="../images/Insurance.png" alt="Insurance">
+          <div class="card-text">
+            <h3>Insurance</h3>
+          </div>
+        </div>
+      </div>
+
+      <div class="industry-card" style="background-color: #FFDEAD;">
+        <div class="card-content">
+          <img src="../images/Real_Istate.png" alt="Real Estate">
+          <div class="card-text">
+            <h3>Real Estate</h3>
+          </div>
+        </div>
+      </div>
+
+      <div class="industry-card" style="background-color: #FFE4B5;">
+        <div class="card-content">
+          <img src="../images/Clean_Energy.png" alt="Clean Energy">
+          <div class="card-text">
+            <h3>Clean Energy</h3>
+          </div>
+        </div>
+      </div>
+
+      <div class="industry-card" style="background-color: #E6E6FA;">
+        <div class="card-content">
+          <img src="../images/Legal_Servcies.png" alt="Legal Services">
+          <div class="card-text">
+            <h3>Legal Services</h3>
+          </div>
+        </div>
+      </div>
+
+      <div class="industry-card" style="background-color: #F5F5DC;">
+        <div class="card-content">
+          <img src="../images/Public&Gov.png" alt="Public Sector & Government">
+          <div class="card-text">
+            <h3>Public Sector & Government</h3>
+          </div>
+        </div>
+      </div>
+
+      <div class="industry-card" style="background-color: #FFB6C1;">
+        <div class="card-content">
+          <img src="../images/Biotechnology.png" alt="Biotechnology">
+          <div class="card-text">
+            <h3>Biotechnology</h3>
+          </div>
+        </div>
+      </div>
+
+      <div class="industry-card" style="background-color: #F0E68C;">
+        <div class="card-content">
+          <img src="../images/Retail and Consumer Goods.png" alt="Retail and Consumer Goods">
+          <div class="card-text">
+            <h3>Retail and Consumer Goods</h3>
+          </div>
+        </div>
+      </div>
+
+      <div class="industry-card" style="background-color: #FAFAD2;">
+        <div class="card-content">
+          <img src="../images/Logistics and Transportation.png" alt="Logistics and Transportation">
+          <div class="card-text">
+            <h3>Logistics and Transportation</h3>
+          </div>
+        </div>
+      </div>
+
+      <div class="industry-card" style="background-color: #ADD8E6;">
+        <div class="card-content">
+          <img src="../images/Agriculture.png" alt="Agriculture">
+          <div class="card-text">
+            <h3>Agriculture</h3>
+          </div>
+        </div>
+      </div>
+
+      <!-- Repeat for remaining 18 industries with different background colors -->
+      <div class="industry-card" style="background-color: #FFFACD;">
+        <div class="card-content">
+          <img src="../images/Tourism and Hospitality.png" alt="Tourism and Hospitality">
+          <div class="card-text">
+            <h3>Tourism and Hospitality</h3>
+          </div>
+        </div>
+      </div>
+
+      <div class="industry-card" style="background-color: #FFE4E1;">
+        <div class="card-content">
+          <img src="../images/Healthcare.png" alt="Healthcare">
+          <div class="card-text">
+            <h3>Healthcare</h3>
+          </div>
+        </div>
+      </div>
+
+      <div class="industry-card" style="background-color: #FFB5C5;">
+        <div class="card-content">
+          <img src="../images/Pharmaceuticals.png" alt="Pharmaceuticals">
+          <div class="card-text">
+            <h3>Pharmaceuticals</h3>
+          </div>
+        </div>
+      </div>
+
+      <div class="industry-card" style="background-color: #FFF0F5;">
+        <div class="card-content">
+          <img src="../images/Media and Entertainment.png" alt="Media and Entertainment">
+          <div class="card-text">
+            <h3>Media and Entertainment</h3>
+          </div>
+        </div>
+      </div>
+
+      <div class="industry-card" style="background-color: #E0FFFF;">
+        <div class="card-content">
+          <img src="../images/Telecommunications.png" alt="Telecommunications">
+          <div class="card-text">
+            <h3>Telecommunications</h3>
+          </div>
+        </div>
+      </div>
+
+      <div class="industry-card" style="background-color: #FAEBD7;">
+        <div class="card-content">
+          <img src="../images/Cybersecurity.png" alt="Cybersecurity">
+          <div class="card-text">
+            <h3>Cybersecurity</h3>
+          </div>
+        </div>
+      </div>
+
+      <div class="industry-card" style="background-color: #DDA0DD;">
+        <div class="card-content">
+          <img src="../images/E-commerce.png" alt="E-commerce">
+          <div class="card-text">
+            <h3>E-commerce</h3>
+          </div>
+        </div>
+      </div>
+
+      <div class="industry-card" style="background-color: #FFE4C4;">
+        <div class="card-content">
+          <img src="../images/Automotive.png" alt="Automotive">
+          <div class="card-text">
+            <h3>Automotive</h3>
+          </div>
+        </div>
+      </div>
+
+      <div class="industry-card" style="background-color: #E0FFFF;">
+        <div class="card-content">
+          <img src="../images/Finance Tech .png" alt="Finance Tech">
+          <div class="card-text">
+            <h3>Finance Tech</h3>
+          </div>
+        </div>
+      </div>
+
+      <div class="industry-card" style="background-color: #FFF5EE;">
+        <div class="card-content">
+          <img src="../images/Supply Chain Management.png" alt="Supply Chain Management">
+          <div class="card-text">
+            <h3>Supply Chain Management</h3>
+          </div>
+        </div>
+      </div>
+
+      <div class="industry-card" style="background-color: #FFEBCD;">
+        <div class="card-content">
+          <img src="../images/Aerospace.png" alt="Aerospace">
+          <div class="card-text">
+            <h3>Aerospace</h3>
+          </div>
+        </div>
+      </div>
+
+      <div class="industry-card" style="background-color: #FFDEAD;">
+        <div class="card-content">
+          <img src="../images/Mining.png" alt="Mining">
+          <div class="card-text">
+            <h3>Mining</h3>
+          </div>
+        </div>
+      </div>
+
+      <div class="industry-card" style="background-color: #FFE4B5;">
+        <div class="card-content">
+          <img src="../images/Renewable Energy.png" alt="Renewable Energy">
+          <div class="card-text">
+            <h3>Renewable Energy</h3>
+          </div>
+        </div>
+      </div>
+
+      <div class="industry-card" style="background-color: #E6E6FA;">
+        <div class="card-content">
+          <img src="../images/Sports and Recreation.png" alt="Sports and Recreation">
+          <div class="card-text">
+            <h3>Sports and Recreation</h3>
+          </div>
+        </div>
+      </div>
+
+      <div class="industry-card" style="background-color: #F5F5DC;">
+        <div class="card-content">
+          <img src="../images/Architecture and Construction.png" alt="Architecture and Construction">
+          <div class="card-text">
+            <h3>Architecture and Construction</h3>
+          </div>
+        </div>
+      </div>
+
+      <div class="industry-card" style="background-color: #FAFAD2;">
+        <div class="card-content">
+          <img src="../images/Defense.png" alt="Defense">
+          <div class="card-text">
+            <h3>Defense</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/main.js"></script>
+  <script>
+    function searchIndustries() {
+      var input, filter, cards, h3, i, txtValue;
+      input = document.getElementById("industry-search");
+      filter = input.value.toLowerCase();
+      cards = document.getElementsByClassName("industry-card");
+      
+      for (i = 0; i < cards.length; i++) {
+        h3 = cards[i].getElementsByTagName("h3")[0];
+        txtValue = h3.textContent || h3.innerText;
+        if (txtValue.toLowerCase().startsWith(filter)) {
+          cards[i].classList.remove("hide");
+          cards[i].classList.add("show");  // Show card with transition
+        } else {
+          cards[i].classList.remove("show");
+          cards[i].classList.add("hide");  // Hide card with transition
+        }
+      }
+    }  
+  </script>
+  <script>
+    function selectIndustry(industryName) {
+      localStorage.setItem("selectedIndustry", industryName);
+      window.location.href = 'company-list.html'; // Redirect to company list page
+    }
+    
+  </script>
+</body>
+</html>
